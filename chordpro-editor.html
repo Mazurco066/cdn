@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <!-- Load Ace Editor and ChordSheetJS libraries from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.13/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chordsheetjs/4.0.3/chordsheetjs.min.js"></script>
+  </head>
+  <body>
+    <!-- Create a div element for the editor -->
+    <div id="editor" style="width: 250px; height: 400px;"></div>
+    <script>
+      // Initialize the editor with chordpro mode
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/monokai");
+      editor.session.setMode("ace/mode/chordpro");
+
+      // Listen for messages from React Native app
+      document.addEventListener("message", function(event) {
+        // Get the chordpro text from the message data
+        var chordproText = event.data;
+
+        // Set the editor value with the chordpro text
+        editor.setValue(chordproText);
+
+        // Format the chordpro text using ChordSheetJS
+        var parser = new ChordSheetJS.ChordProParser();
+        var formatter = new ChordSheetJS.HtmlTableFormatter();
+        var song = parser.parse(chordproText);
+        var html = formatter.format(song);
+
+        // Send back the formatted html to React Native app
+        window.ReactNativeWebView.postMessage(html);
+      });
+    </script>
+  </body>
+</html>
